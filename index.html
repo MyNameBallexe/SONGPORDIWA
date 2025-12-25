@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สองปอดิวะ</title>
+    <!-- Fonts: Kanit สำหรับภาษาไทย, Rajdhani สำหรับตัวเลข/อังกฤษ -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            /* Palette Themes */
+            --k-bg-dark: #050a10;
+            --k-card-bg: rgba(18, 30, 40, 0.95);
+            --k-cyan: #00f0ff;
+            --k-cyan-dim: #008c99;
+            --k-text-main: #eefbff;
+            --k-border: #2b4e58;
+        }
+
+        body {
+            background-color: var(--k-bg-dark);
+            color: var(--k-text-main);
+            font-family: 'Kanit', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 50% 0%, #102a30 0%, transparent 70%),
+                linear-gradient(180deg, var(--k-bg-dark) 0%, #000000 100%);
+        }
+
+        /* Typography */
+        h1, .eng-font, .countdown-number { font-family: 'Rajdhani', sans-serif; }
+        .th-header { font-weight: 600; letter-spacing: 1px; }
+
+        /* Helper Classes */
+        .hidden { display: none !important; }
+        
+        /* --- Background Animation --- */
+        .bg-fx {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cGF0aCBkPSJNMCA1MCB1MjUgMjUgMjUgLTI1IDI1IDI1IDI1IC0yNSIgc3Ryb2tlPSIjMDBmMGZmIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiIC8+PC9zdmc+');
+            background-size: 100px 50px;
+            animation: waterFlow 30s linear infinite;
+        }
+        @keyframes waterFlow {
+            0% { transform: translateY(0) scale(1.1); }
+            50% { transform: translateY(-50px) scale(1); }
+            100% { transform: translateY(0) scale(1.1); }
+        }
+
+        /* --- INPUT PAGE STYLES --- */
+        .k-card {
+            background: var(--k-card-bg);
+            border: 1px solid var(--k-border);
+            border-top: 2px solid var(--k-cyan);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            padding: 2rem;
+            backdrop-filter: blur(5px);
+        }
+
+        .form-control, .form-select {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--k-border);
+            color: #fff;
+            font-family: 'Kanit', sans-serif;
+            font-size: 1.1rem;
+        }
+        .form-control:focus, .form-select:focus {
+            background: rgba(0, 0, 0, 0.6);
+            border-color: var(--k-cyan);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+            color: #fff;
+        }
+        .form-label { color: var(--k-cyan); font-weight: 500; text-shadow: 0 0 10px rgba(0, 240, 255, 0.3); }
+
+        .btn-kuronami {
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--k-cyan);
+            color: var(--k-cyan);
+            font-family: 'Kanit', sans-serif;
+            font-weight: 600;
+            font-size: 1.2rem;
+            padding: 15px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+        }
+        .btn-kuronami:hover {
+            background: var(--k-cyan);
+            color: #000;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* --- LOADER STYLES --- */
+        #cinematic-loader {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .countdown-number {
+            font-size: 150px;
+            font-weight: 700;
+            color: var(--k-cyan);
+            text-shadow: 0 0 60px var(--k-cyan);
+            animation: pulse 0.8s infinite alternate;
+        }
+        .loader-ring {
+            width: 220px; height: 220px;
+            border: 3px solid rgba(0, 240, 255, 0.1);
+            border-top: 3px solid var(--k-cyan);
+            border-radius: 50%;
+            position: absolute;
+            animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+        }
+        @keyframes pulse { to { transform: scale(1.1); opacity: 0.8; } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* --- RESULT STYLES --- */
+        .result-card {
+            background: rgba(20, 30, 40, 0.9);
+            border-left: 5px solid var(--k-cyan);
+            border-radius: 4px;
+            margin-bottom: 15px;
+            padding: 25px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            opacity: 0; 
+            transform: scale(0.95) translateY(30px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        .reveal-ink {
+            animation: inkSlash 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+        @keyframes inkSlash {
+            0% { opacity: 0; transform: scale(0.9) translateY(20px); clip-path: inset(0 100% 0 0); }
+            100% { opacity: 1; transform: scale(1) translateY(0); clip-path: inset(0 0 0 0); }
+        }
+        .name-box { font-size: 1.6rem; font-weight: 500; color: #fff; }
+        .char-box {
+            font-size: 3.5rem;
+            color: var(--k-cyan);
+            font-weight: bold;
+            text-shadow: 0 0 25px rgba(0,240,255,0.6);
+            width: 80px;
+            text-align: center;
+            position: relative;
+        }
+        /* Ripple effect behind letter */
+        .char-box::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 80px; height: 80px; border-radius: 50%;
+            border: 2px solid var(--k-cyan); opacity: 0;
+            transform: translate(-50%, -50%) scale(0.5);
+            animation: ripple 0.6s ease-out 0.2s forwards;
+        }
+        @keyframes ripple {
+            0% { opacity: 0.8; transform: translate(-50%, -50%) scale(0.5); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+        }
+
+        /* Controls */
+        .control-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            padding: 20px;
+            background: linear-gradient(0deg, #000 20%, transparent 100%);
+            display: flex; justify-content: center; gap: 15px;
+            z-index: 100; pointer-events: none;
+        }
+        .control-bar button { pointer-events: auto; }
+        .btn-action {
+            background: rgba(5, 10, 16, 0.9);
+            border: 1px solid var(--k-cyan);
+            color: var(--k-cyan);
+            padding: 12px 30px;
+            font-family: 'Kanit', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            transition: all 0.2s;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+        }
+        .btn-action:hover {
+            background: var(--k-cyan); color: #000;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
+            transform: translateY(-2px);
+        }
+        .btn-action:disabled {
+            border-color: #444; color: #666; background: rgba(0,0,0,0.5);
+            box-shadow: none; transform: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-fx"></div>
+
+    <!-- VIEW 1: INPUT SCREEN -->
+    <div id="view-input" class="container py-5">
+        <div class="text-center mb-5">
+            <h1 class="display-3 fw-bold eng-font" style="color: var(--k-cyan); text-shadow: 0 0 20px rgba(0,240,255,0.6);">PHYSIOT</h1>
+            <h3 class="th-header text-light opacity-75">สองปอสุ่มของขวัญ</h3>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="k-card">
+                    <div class="mb-4">
+                        <label class="form-label">📝 รายชื่อผู้เข้าร่วม (บรรทัดละ 1 ชื่อ)</label>
+                        <textarea id="nameInput" class="form-control" rows="8" placeholder="ตัวอย่าง:&#10;มีมาย&#10;เอดะมูน&#10;สเตตัส"></textarea>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label small text-secondary">รูปแบบการเฉลย</label>
+                            <select id="displayMode" class="form-select">
+                                <option value="all">แสดงผลพร้อมกันทั้งหมด</option>
+                                <option value="step">ค่อยๆ เปิดทีละคน (ลุ้น)</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label small text-secondary">ตั้งตัวอักษรซ้ำ</label>
+                            <select id="dupeMode" class="form-select">
+                                <option value="unique">ห้ามซ้ำ</option>
+                                <option value="limit">ซ้ำน้อย</option>
+                                <option value="repeat">มีโอกาสซ้ำมาก</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button onclick="startProtocol()" class="btn btn-kuronami rounded-1">
+                        เริ่มทำการสุ่ม
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW 2: LOADING SCREEN -->
+    <div id="cinematic-loader" class="hidden">
+        <div class="loader-ring"></div>
+        <div class="countdown-number" id="count-display">5</div>
+        <p class="mt-4 text-light opacity-50" style="letter-spacing: 2px; font-family: 'Kanit';">.....รอแปป.....</p>
+    </div>
+
+    <!-- VIEW 3: RESULT SCREEN -->
+    <div id="view-result" class="container hidden">
+        <h2 class="text-center mb-4 mt-3 opacity-75" style="letter-spacing: 2px; color: var(--k-cyan); font-family: 'Rajdhani';">MISSION REPORT</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8" id="list-target">
+                <!-- Cards will be injected here -->
+            </div>
+        </div>
+        <div style="height: 120px;"></div>
+
+        <!-- Controls -->
+        <div class="control-bar">
+            <button id="btn-next" class="btn-action hidden" onclick="revealNext()">เปิดคนถัดไป ▶</button>
+            <button class="btn-action" onclick="resetApp()">🔄 กลับหน้าแรก</button>
+        </div>
+    </div>
+
+    <script>
+        // --- GLOBAL STATE ---
+        const ALLOWED_CHARS = [
+            'ก', 'ข', 'ค', 'ง', 'จ', 'ฉ', 'ช', 'ซ', 'ด', 'ต', 'ท', 'น',
+            'บ', 'ป', 'ผ', 'พ', 'ม', 'ย', 'ร', 'ล', 'ว', 'ส', 'ห', 'อ'
+        ];
+        
+        let appData = {
+            assignments: [],
+            currentIndex: 0,
+            config: {}
+        };
+
+        // --- NAVIGATION & LOGIC ---
+
+        function startProtocol() {
+            const rawInput = document.getElementById('nameInput').value;
+            const names = rawInput.split('\n').map(n => n.trim()).filter(n => n !== '');
+            const mode = document.getElementById('displayMode').value;
+            const dupe = document.getElementById('dupeMode').value;
+
+            // Validation
+            if (names.length === 0) {
+                alert("⚠️ ข้อผิดพลาด: ไม่พบรายชื่อ\nกรุณากรอกรายชื่อผู้เข้าร่วมก่อนเริ่มเกม");
+                return;
+            }
+            if (dupe === 'unique' && names.length > ALLOWED_CHARS.length) {
+                alert(`⚠️ แจ้งเตือนระบบ: ตัวอักษรไม่พอแจกจ่าย\nจำนวนคน: ${names.length}\nตัวอักษรที่มี: ${ALLOWED_CHARS.length}\n\nกรุณาเปลี่ยนโหมดเป็น 'สมดุล' หรือ 'สุ่มอิสระ'`);
+                return;
+            }
+
+            // Save Config in Memory
+            appData.config = { names, mode, dupe };
+
+            // Run Randomizer Logic
+            runRandomizerLogic(names, dupe);
+
+            // Switch Views: Input -> Loader
+            document.getElementById('view-input').classList.add('hidden');
+            const loader = document.getElementById('cinematic-loader');
+            loader.classList.remove('hidden');
+            loader.style.opacity = 1;
+            loader.style.display = 'flex'; // Ensure flex layout for centering
+
+            // Start Countdown
+            let count = 5;
+            const countDisplay = document.getElementById('count-display');
+            countDisplay.innerText = count;
+
+            const timer = setInterval(() => {
+                count--;
+                countDisplay.innerText = count;
+
+                if (count <= 0) {
+                    clearInterval(timer);
+                    // Transition: Loader -> Result
+                    loader.style.transition = "opacity 0.6s";
+                    loader.style.opacity = 0;
+                    
+                    setTimeout(() => {
+                        loader.classList.add('hidden'); // Fully hide
+                        document.getElementById('view-result').classList.remove('hidden');
+                        beginReveal();
+                    }, 600);
+                }
+            }, 1000);
+        }
+
+        function runRandomizerLogic(names, dupeMode) {
+            let finalChars = [];
+
+            if (dupeMode === 'unique') {
+                let pool = shuffle([...ALLOWED_CHARS]);
+                finalChars = pool.slice(0, names.length);
+            } 
+            else if (dupeMode === 'repeat') {
+                for(let i=0; i<names.length; i++) {
+                    finalChars.push(ALLOWED_CHARS[Math.floor(Math.random() * ALLOWED_CHARS.length)]);
+                }
+            }
+            else if (dupeMode === 'limit') {
+                let repeatsNeeded = Math.ceil(names.length / ALLOWED_CHARS.length);
+                let pool = [];
+                for(let i=0; i<repeatsNeeded; i++) {
+                    pool = pool.concat([...ALLOWED_CHARS]);
+                }
+                pool = shuffle(pool);
+                finalChars = pool.slice(0, names.length);
+            }
+
+            appData.assignments = names.map((name, i) => ({
+                name: name,
+                char: finalChars[i]
+            }));
+            
+            // Shuffle final pairs for suspense
+            appData.assignments = shuffle(appData.assignments);
+        }
+
+        function beginReveal() {
+            const listTarget = document.getElementById('list-target');
+            listTarget.innerHTML = ''; // Clear previous
+
+            if (appData.config.mode === 'all') {
+                appData.assignments.forEach((item, i) => {
+                    setTimeout(() => {
+                        createCard(item);
+                        if(i > 3) window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                    }, i * 300);
+                });
+            } else {
+                // Step Mode
+                document.getElementById('btn-next').classList.remove('hidden');
+                appData.currentIndex = 0;
+                revealNext(); // Show first immediately
+            }
+        }
+
+        function revealNext() {
+            if (appData.currentIndex < appData.assignments.length) {
+                createCard(appData.assignments[appData.currentIndex]);
+                appData.currentIndex++;
+                
+                // Update button text
+                const btn = document.getElementById('btn-next');
+                if (appData.currentIndex >= appData.assignments.length) {
+                    btn.innerText = "ครบทุกคนแล้ว";
+                    btn.disabled = true;
+                    btn.style.opacity = 0.5;
+                } else {
+                    btn.innerText = `เปิดคนถัดไป (${appData.currentIndex}/${appData.assignments.length})`;
+                }
+                
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
+        }
+
+        function createCard(data) {
+            const target = document.getElementById('list-target');
+            const card = document.createElement('div');
+            card.className = 'result-card';
+            card.innerHTML = `
+                <div class="name-box">${data.name}</div>
+                <div class="char-box">${data.char}</div>
+            `;
+            target.appendChild(card);
+            void card.offsetWidth; // Trigger reflow
+            card.classList.add('reveal-ink');
+        }
+
+        function resetApp() {
+            // Switch Views: Result -> Input
+            document.getElementById('view-result').classList.add('hidden');
+            document.getElementById('view-input').classList.remove('hidden');
+            
+            // Reset State
+            document.getElementById('list-target').innerHTML = '';
+            const btnNext = document.getElementById('btn-next');
+            btnNext.classList.add('hidden');
+            btnNext.disabled = false;
+            btnNext.innerText = "เปิดคนถัดไป ▶";
+            btnNext.style.opacity = 1;
+            
+            // Clear inputs if desired? (Optional - keeping them makes it easier to re-roll)
+        }
+
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+    </script>
+</body>
+</html>
